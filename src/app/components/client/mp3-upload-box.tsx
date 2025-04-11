@@ -1,5 +1,6 @@
 'use client'
 import { useState } from "react";
+import { uploadMp3 } from "../server/upload-mp3";
 
 const Mp3UploadBox = () => {
     const [file, setFile] = useState<string | null>(null);
@@ -26,13 +27,23 @@ const Mp3UploadBox = () => {
                     if (file) {
                         let blobUrl = URL.createObjectURL(file);
                         setFile(blobUrl);
+                        console.log(`items file[${i}].name = ${file.name}`);
+                        try {
+                            const result = uploadMp3(file);
+                        } catch (err) {
+                            console.error(`Upload failed for ${file.name}:`, err);
+                        }
                     }
-                    console.log(`items file[${i}].name = ${file?.name}`);
                 }
             });
         } else {
             [...event.dataTransfer.files].forEach((file, i) => {
                 console.log(`file[${i}].name = ${file.name}`);
+                try {
+                    const result = uploadMp3(file);
+                } catch (err) {
+                    console.error(`Upload failed for ${file.name}:`, err);
+                }
             });
         }
     };
@@ -51,7 +62,7 @@ const Mp3UploadBox = () => {
                     <audio controls src={file} className="mx-auto" />
                 </div>
             ) : (
-                <p className="text-gray-600">Drop an MP3 file here</p>
+                <p className="text-gray-600">Drop an MP3 file here or click to browse</p>
             )}
         </div>
     );
