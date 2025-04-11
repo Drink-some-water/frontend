@@ -1,12 +1,12 @@
 import Mp3UploadBox from './components/client/mp3-upload-box'
+import DragDropHandler from './components/client/drag-drop-handler'
 
 export default function Home() {
-  //onDragOver={(e) => e.preventDefault()} 
   return (
     <div>
-       
-      <main>
-        <Mp3UploadBox/>
+      <DragDropHandler />
+      <main className="min-h-screen flex items-center justify-center">
+        <Mp3UploadBox />
       </main>
     </div>
   );
