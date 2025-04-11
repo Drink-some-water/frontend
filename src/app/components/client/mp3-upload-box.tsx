@@ -2,7 +2,7 @@
 import {useState} from "react";
 
 //BACKLOG: add userFiles as an arg of mp3UploadBox when loading playlist from server 
-const mp3UploadBox = () => {
+const Mp3UploadBox = () => {
     const [file, setFile] = useState<string>();
     //const [fileEnter, setFileEnter] = useState(false) //used to track whether there is a file being dragged for visualization
 
@@ -28,12 +28,20 @@ const mp3UploadBox = () => {
     
     return (
         <div
-            onDrop={fileDrop}
-            onDragOver={(e) => e.preventDefault()} // Allow drag over
-        >
-            {/* Your content here */}
-        </div>
+        className="border-4 border-dashed border-gray-400 rounded-lg p-10 text-center hover:border-blue-400 transition-colors duration-200"
+        onDrop={fileDrop}
+        onDragOver={(e) => e.preventDefault()}
+    >
+        {file ? (
+            <div>
+                <p className="mb-4">File dropped:</p>
+                <audio controls src={file} className="mx-auto" />
+            </div>
+        ) : (
+            <p className="text-gray-600">Drop an MP3 file here</p>
+        )}
+    </div>
     )
 }
 
-export default mp3UploadBox;
+export default Mp3UploadBox;
