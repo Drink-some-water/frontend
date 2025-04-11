@@ -1,30 +1,17 @@
 export async function uploadMp3(file: File) {
-    const formData = new FormData();
-    formData.append("file", file);
+  const formData = new FormData();
+  formData.append('file', file);
 
-    // Debug: log the form data
-    console.log("Uploading file:");
-    for (const [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-    }
+  // 🧪 TEMP: Using a placeholder test endpoint for now (e.g. webhook.site, mockbin, or localhost when ready)
+  const response = await fetch('https://webhook.site/your-temp-url', {
+    method: 'POST',
+    body: formData,
+  });
 
-    try {
-        const res = await fetch("/api/upload", {
-            method: "POST",
-            body: formData,
-        });
+  if (!response.ok) {
+    throw new Error(`Failed to upload MP3: ${response.statusText}`);
+  }
 
-        if (!res.ok) {
-            const contentType = res.headers.get("content-type");
-            const errorText = contentType?.includes("application/json")
-                ? (await res.json())?.error || "Unknown server error"
-                : await res.text();
-
-            throw new Error(`Server responded with ${res.status}: ${errorText}`);
-        }
-
-        return await res.json();
-    } catch (err: any) {
-        throw new Error(`Upload failed (${file.name}, ${file.size} bytes): ${err.message}`);
-    }
+  const result = await response.json().catch(() => ({})); // In case it returns plain text
+  return result;
 }

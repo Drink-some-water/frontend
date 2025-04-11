@@ -1,18 +1,17 @@
-'use client'
+'use client';
 import { useState } from "react";
 import { uploadMp3 } from "../server/upload-mp3";
 
 const Mp3UploadBox = () => {
-    const [file, setFile] = useState<string | null>(null);
+    const [fileUrls, setFileUrls] = useState<string[]>([]);
     const [isDragging, setIsDragging] = useState(false);
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
+        e.preventDefault(); // prevents browser from opening the file
         if (!isDragging) setIsDragging(true);
     };
 
     const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
         setIsDragging(false);
     };
 
@@ -20,31 +19,30 @@ const Mp3UploadBox = () => {
         event.preventDefault();
         setIsDragging(false);
 
+        const handleFile = (file: File) => {
+            if (!file.type.startsWith("audio/")) return;
+
+            const blobUrl = URL.createObjectURL(file);
+            setFileUrls(prev => [...prev, blobUrl]);
+
+            try {
+                uploadMp3(file);
+            } catch (err) {
+                console.error(`Upload failed for ${file.name}:`, err);
+            }
+        };
+
         if (event.dataTransfer.items) {
-            [...event.dataTransfer.items].forEach((item, i) => {
+            for (const item of event.dataTransfer.items) {
                 if (item.kind === "file") {
                     const file = item.getAsFile();
-                    if (file) {
-                        let blobUrl = URL.createObjectURL(file);
-                        setFile(blobUrl);
-                        console.log(`items file[${i}].name = ${file.name}`);
-                        try {
-                            const result = uploadMp3(file);
-                        } catch (err) {
-                            console.error(`Upload failed for ${file.name}:`, err);
-                        }
-                    }
+                    if (file) handleFile(file);
                 }
-            });
-        } else {
-            [...event.dataTransfer.files].forEach((file, i) => {
-                console.log(`file[${i}].name = ${file.name}`);
-                try {
-                    const result = uploadMp3(file);
-                } catch (err) {
-                    console.error(`Upload failed for ${file.name}:`, err);
-                }
-            });
+            }
+        } else if (event.dataTransfer.files) {
+            for (const file of event.dataTransfer.files) {
+                handleFile(file);
+            }
         }
     };
 
@@ -56,14 +54,16 @@ const Mp3UploadBox = () => {
             className={`border-4 border-dashed rounded-lg p-10 text-center transition-colors duration-200
                 ${isDragging ? 'border-blue-400 bg-blue-50 shadow-md shadow-blue-200' : 'border-gray-400 bg-white'}`}
         >
-            {file ? (
-                <div>
-                    <p className="mb-4">File dropped:</p>
-                    <audio controls src={file} className="mx-auto" />
+            {fileUrls.length > 0 && (
+                <div className="space-y-6">
+                    <p className="mb-4">Files dropped:</p>
+                    {fileUrls.map((url, idx) => (
+                        <audio key={idx} controls src={url} className="mx-auto" />
+                    ))}
                 </div>
-            ) : (
-                <p className="text-gray-600">Drop an MP3 file here or click to browse</p>
             )}
+
+            <p className="text-gray-600">Drop one or more MP3 files here or click to browse</p>
         </div>
     );
 };
