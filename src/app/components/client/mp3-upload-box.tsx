@@ -7,7 +7,7 @@ const Mp3UploadBox = () => {
     const [isDragging, setIsDragging] = useState(false);
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault(); // prevents browser from opening the file
+        e.preventDefault();
         if (!isDragging) setIsDragging(true);
     };
 
@@ -15,18 +15,18 @@ const Mp3UploadBox = () => {
         setIsDragging(false);
     };
 
-    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
         setIsDragging(false);
 
-        const handleFile = (file: File) => {
+        const handleFile = async (file: File) => {
             if (!file.type.startsWith("audio/")) return;
 
             const blobUrl = URL.createObjectURL(file);
             setFileUrls(prev => [...prev, blobUrl]);
 
             try {
-                uploadMp3(file);
+                await uploadMp3(file);
             } catch (err) {
                 console.error(`Upload failed for ${file.name}:`, err);
             }
@@ -36,12 +36,12 @@ const Mp3UploadBox = () => {
             for (const item of event.dataTransfer.items) {
                 if (item.kind === "file") {
                     const file = item.getAsFile();
-                    if (file) handleFile(file);
+                    if (file) await handleFile(file);
                 }
             }
         } else if (event.dataTransfer.files) {
             for (const file of event.dataTransfer.files) {
-                handleFile(file);
+                await handleFile(file);
             }
         }
     };
