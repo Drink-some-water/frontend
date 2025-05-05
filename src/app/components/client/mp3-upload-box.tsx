@@ -1,10 +1,25 @@
 'use client';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { uploadMp3 } from "../server/upload-mp3";
+import { getMp3 } from "../server/get-mp3";
 
 const Mp3UploadBox = () => {
     const [fileUrls, setFileUrls] = useState<string[]>([]);
     const [isDragging, setIsDragging] = useState(false);
+
+    useEffect(() => {
+        const loadFiles = async () => {
+            try {
+                const urls = await getMp3();
+                setFileUrls(urls);
+            } catch (err) {
+                console.error("Failed to load MP3 files:", err);
+            }
+        };
+
+        loadFiles();
+    }, []);
+
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault(); // prevents browser from opening the file
@@ -56,7 +71,7 @@ const Mp3UploadBox = () => {
         >
             {fileUrls.length > 0 && (
                 <div className="space-y-6">
-                    <p className="mb-4">Files dropped:</p>
+                    <p className="mb-4">Stored MP3s:</p>
                     {fileUrls.map((url, idx) => (
                         <audio key={idx} controls src={url} className="mx-auto" />
                     ))}
