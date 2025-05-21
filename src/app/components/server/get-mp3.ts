@@ -1,6 +1,7 @@
 export async function getMp3(): Promise<string[]> {
     const res = await fetch("http://localhost:8000/get-files");
     const data = await res.json();
+    console.log(data);
 
     const urls: string[] = [];
 
