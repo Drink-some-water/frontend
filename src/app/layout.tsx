@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import SessionProviderWrapper from "./components/client/session-provider-wrapper";
 
 export const metadata: Metadata = {
   title: "UlyBot Prototype",
@@ -12,7 +13,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-        <body>{children}</body>
+        <body>
+          <SessionProviderWrapper>{children}</SessionProviderWrapper>
+        </body>
     </html>
   );
 }

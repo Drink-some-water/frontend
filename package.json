@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "cross-env": "^7.0.3",
-    "next": "^15.4.0-canary.40",
+    "next": "^15.1.8",
+    "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
